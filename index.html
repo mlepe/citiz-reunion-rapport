@@ -308,6 +308,14 @@
   ol.steps3 li span { color: var(--fg2); font-size: 13px; line-height: 19px; }
   .drawer .db > p { margin: 0; line-height: 20px; color: var(--fg2); }
   .lim { display: grid; gap: 8px; align-content: start; }
+  /* Scoring indicators at the top of Implantation */
+  .crit { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: 8px; }
+  .crit > div { display: grid; grid-template-columns: auto 1fr; gap: 0 10px; align-items: baseline; background: var(--brand-soft); border-radius: 6px; padding: 8px 12px; }
+  .crit b { grid-row: span 2; font-family: var(--display); font-size: 20px; color: var(--brand); }
+  .crit span { font-weight: 600; font-size: 13px; }
+  .crit small { grid-column: 2; font-size: 11.5px; line-height: 15px; color: var(--fg3); }
+  .crit .station { background: var(--bg1); border: 1px dashed var(--brand-soft2); }
+  .crit .station b { font-size: 14px; }
   /* Previous and next page */
   .pager { position: fixed; top: 50%; transform: translateY(-50%); z-index: 1050; width: 30px; height: 64px; display: grid; place-items: center; border: 1px solid var(--stroke);
            border-radius: 8px; background: var(--bg1); color: var(--fg2); box-shadow: var(--shadow4); cursor: pointer; opacity: .7; transition: opacity .15s, background .15s; }
@@ -518,6 +526,13 @@
     <p>Estimer un emplacement : habitants des carreaux dans le rayon de l'équipement, ceux qui ne sont pas encore à 500 m d'une des 10 stations proposées, et le coût (estimateur de coûts pour l'autopartage, fourchettes sourcées pour le bus et le vélo). Ordre de grandeur, pas une prévision.</p>
   </div>
   <div class="th"><h2>Implantation : où ouvrir les stations</h2><span class="sub" id="scope-investir"></span></div>
+  <div class="crit" aria-label="Indicateurs du score">
+    <div><b>25 %</b><span>Population</span><small>habitants au carreau de 200 m</small></div>
+    <div><b>25 %</b><span>Intensité urbaine</span><small>densité, emplois et équipements par km² urbanisé</small></div>
+    <div><b>25 %</b><span>Ménages sans voiture</span><small>part des ménages (recensement 2023)</small></div>
+    <div><b>25 %</b><span>Desserte de pointe</span><small>habitants avec au moins 4 départs entre 7 h et 9 h à 5 min à pied</small></div>
+    <div class="station"><b>Stations</b><span>Potentiel à pied</span><small>ménages sans voiture × 1, deux voitures ou plus × 0,5, autres × 0,2</small></div>
+  </div>
   <div class="kpis compact" id="kpis-invest"></div>
   <div class="grid wide">
     <div class="card"><div class="mapbox" id="box-invest">
@@ -536,23 +551,6 @@
     <div class="pane" id="p-sites"><div class="tablebox"><table id="t-sites"></table></div></div>
     <div class="pane" id="p-karl" hidden><div class="tablebox"><table id="t-karl"></table></div></div>
     <div class="pane" id="p-communes" hidden><div class="tablebox"><table id="t-communes"></table></div></div></div>
-</section>
-
-<section class="tab" id="similarite" data-group="tool" data-label="Similarité" data-icon="compare" data-src="sim,citiz,filosofi,rp,bpe,gtfs">
-  <div class="about" hidden>
-    <p id="sim-intro"></p>
-    <p>Les scores classent les périmètres de ce calcul entre eux ; ce n'est pas une probabilité de succès. La similarité reste séparée du score : deux jugements à confronter avant de les combiner.</p>
-  </div>
-  <div class="th"><h2>Similarité avec des stations Citiz qui fonctionnent</h2><span class="sub" id="scope-similarite"></span></div>
-  <div class="grid wide">
-    <div class="card"><div class="mapbox" id="box-sim">
-      <div class="maptools"><div class="controls"><label>Communes étudiées <select id="sel-sim"></select></label></div></div>
-      <div class="legend" id="leg-sim"></div><div id="m-sim" class="map"></div></div></div>
-    <div class="side">
-      <div class="card"><div class="hd"><h3>Fiche du périmètre</h3></div><div id="fiche"><p class="note">Cliquez un point de la carte ou une ligne du tableau.</p></div></div>
-      <div class="card"><div class="hd"><h3>Les plus semblables</h3></div><div class="tablebox short"><table id="t-sim"></table></div></div>
-    </div>
-  </div>
 </section>
 
 <section class="tab" id="budget" data-group="tool" data-label="Budget et coûts" data-icon="euro" data-src="budget,v2,karl,couts,equipements,reco">
@@ -604,6 +602,24 @@
       </div>
       <p class="note" id="calc-note"></p></div></div>
 </section>
+
+<section class="tab" id="similarite" data-group="tool" data-label="Similarité" data-icon="compare" data-src="sim,citiz,filosofi,rp,bpe,gtfs">
+  <div class="about" hidden>
+    <p id="sim-intro"></p>
+    <p>Les scores classent les périmètres de ce calcul entre eux ; ce n'est pas une probabilité de succès. La similarité reste séparée du score : deux jugements à confronter avant de les combiner.</p>
+  </div>
+  <div class="th"><h2>Similarité avec des stations Citiz qui fonctionnent</h2><span class="sub" id="scope-similarite"></span></div>
+  <div class="grid wide">
+    <div class="card"><div class="mapbox" id="box-sim">
+      <div class="maptools"><div class="controls"><label>Communes étudiées <select id="sel-sim"></select></label></div></div>
+      <div class="legend" id="leg-sim"></div><div id="m-sim" class="map"></div></div></div>
+    <div class="side">
+      <div class="card"><div class="hd"><h3>Fiche du périmètre</h3></div><div id="fiche"><p class="note">Cliquez un point de la carte ou une ligne du tableau.</p></div></div>
+      <div class="card"><div class="hd"><h3>Les plus semblables</h3></div><div class="tablebox short"><table id="t-sim"></table></div></div>
+    </div>
+  </div>
+</section>
+
 
 
 <section class="tab" id="limites" data-group="next" data-label="Limites et améliorations" data-icon="warn">
@@ -858,6 +874,9 @@ function lines(container, series, xs, yfmt, opts) {
 const tabs = [...document.querySelectorAll(".tab")], nav = $("nav"), init = {}, drawn = {}, redraw = {};
 function show(id, keepScroll) {
   if (fsBox) fullscreen(fsBox[0], fsBox[1], false);
+  // a new page starts on the whole island: the commune filter is reset when the page changes
+  const current = tabs.find(t => t.classList.contains("on"));
+  if (SCOPE.code && current && current.id !== id) setScope("");
   tabs.forEach(t => t.classList.toggle("on", t.id === id));
   nav.querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === id)));
   const page = $(id), tool = page.dataset.group === "tool";
