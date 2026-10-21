@@ -924,7 +924,7 @@ kpis("kpis-tc", [
   {v: tcDepartures, f: fr, l: "départs par jour sur les " + D.networks.length + " réseaux (mardi 20 octobre 2026)", info: D.networks.map(n => n.reseau + " " + fr(n.departs)).join(", ") + ".", src: ["gtfs"]}]);
 D.communes.forEach(c => { communeByCode[c.code] = c; });
 // The approach in four steps; step 2 compares the communes in two ways, each with its page
-[["1", "Diagnostiquer", "Population, motorisation, accès aux transports à 5 minutes à pied : qui est concerné, où.", [["acces", "Accès · Qui est concerné"]]],
+[["1", "Vue d'ensemble", "Population, motorisation, accès aux transports à 5 minutes à pied : qui est concerné, où.", [["acces", "Accès · Qui est concerné"]]],
  ["2", "Comparaison des communes", "", [["investir", "Par opportunité", "Les 24 communes comparées sur quatre critères, puis le choix des stations une à une, contrôlé par l'outil de Karl."],
    ["similarite", "Par similarité", "Comparaison test des quartiers de 5 communes avec les abords de 4 stations Citiz en métropole (Eybens, Pélussin, ArchParc)."]]],
  ["3", "Budgets", "Estimation des coûts d'une station : installation, exploitation, hypothèses d'usage ; nombre de stations pour un budget.", [["budget", "Budget et coûts"]]],
