@@ -355,6 +355,13 @@
   .hero-map ul.facts li { grid-template-columns: 1fr; gap: 2px; font-size: 14px; line-height: 19px; color: rgba(255,255,255,.88); }
   .hero-map ul.facts li b { font-size: clamp(30px, 3.4vw, 44px); line-height: 1; color: #fff; letter-spacing: -.01em; }
   .hero-map ul.facts li b.hot { color: #ffb4a8; }
+  .hero-map .factgroup { display: grid; gap: 10px; }
+  .hero-map ul.facts.three { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 20px; }
+  .hero-map ul.facts.three li b { font-size: clamp(22px, 2.2vw, 30px); }
+  .hero-map ul.facts.three li { font-size: 13px; line-height: 17px; }
+  .hero-map ul.facts li { cursor: help; }
+  .island figcaption .srcs { margin-left: auto; }
+  @media (max-width: 700px) { .hero-map ul.facts.three { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .hero-t { margin: 0; font-family: var(--display); font-weight: 600; font-size: clamp(22px, 3vw, 30px); line-height: 1.2; position: relative; z-index: 1; text-wrap: balance; }
   ul.facts { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 10px 24px; position: relative; z-index: 1; }
   ul.facts li { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; font-size: 15px; line-height: 21px; }
@@ -430,17 +437,12 @@
     <div class="hero-text">
       <div class="k" id="hero-sub"></div>
       <h2 class="hero-t">Trouver une solution à l'encombrement routier de La Réunion</h2>
-      <ul class="facts" id="facts"></ul>
+      <div class="factgroup"><div class="k">Une dépendance automobile forte</div><ul class="facts" id="facts-car"></ul></div>
+      <div class="factgroup"><div class="k">Les transports en commun</div><ul class="facts three" id="facts-tc"></ul></div>
       <div class="cta"><button class="primary" type="button" data-go="demarche">Notre démarche</button><button type="button" data-go="acces">Ouvrir l'outil</button></div>
     </div>
     <figure class="island"><canvas id="island" role="img" aria-label="Carte de La Réunion : carreaux habités et routes nationales selon leur trafic"></canvas>
-      <figcaption><span class="ramp"></span><span id="island-cap"></span></figcaption></figure>
-  </div>
-  <div class="grid">
-    <div class="card"><div class="hd"><h3>Une dépendance automobile forte</h3><span class="srcs" data-src="insee91,rp,trafic"></span></div>
-      <div class="kpis compact" id="kpis-context"></div></div>
-    <div class="card"><div class="hd"><h3>Les transports en commun</h3><span class="srcs" data-src="rp,gtfs,osm,filosofi"></span></div>
-      <div class="kpis compact" id="kpis-tc"></div></div>
+      <figcaption><span class="ramp"></span><span id="island-cap"></span><span class="srcs" data-src="insee91,trafic,rp,gtfs,osm,filosofi"></span></figcaption></figure>
   </div>
 </section>
 
@@ -927,9 +929,20 @@ const leaders = D.communes.filter(c => c.score_group === 1).map(c => c.name);
 const cost10 = D.costs.filter(c => c.methode === "v2" && c.motorisation === D.default_drive && c.rang <= 10);
 $("hero-sub").textContent = "Notre territoire : l'île de La Réunion · " + D.communes.length + " communes · " + fr(D.context.population) + " habitants · 5 intercommunalités";
 const X = D.context, tcDepartures = D.networks.reduce((a, n) => a + n.departs, 0);
-[[pct(0.83), "des actifs qui se déplacent pour travailler prennent la voiture (2021)"], [fr(X.traffic[0].tmja), "véhicules par jour sur la " + X.traffic[0].route + " à " + X.traffic[0].lieu + " (2023)"],
- [fr(D.households.no_car), "ménages sans voiture, qui dépendent des transports en commun"], [fr(D.access.without_stop), "habitants sans aucun arrêt à 5 minutes à pied"]]
-  .forEach(([v, t], i) => { const li = el("li"); li.appendChild(el("b", v, i === 1 ? "hot" : "")); li.appendChild(el("span", t)); $("facts").appendChild(li); });
+// Key figures in the hero: car dependence, then public transport; hover for the definition
+function facts(id, list) {
+  list.forEach(([v, t, info, hot]) => { const li = el("li"); li.appendChild(el("b", v, hot ? "hot" : "")); li.appendChild(el("span", t)); hoverTip(li, t, info); $(id).appendChild(li); });
+}
+facts("facts-car", [
+  [pct(0.83), "des actifs qui se déplacent pour travailler prennent la voiture (2021)", "Insee Analyses Réunion n° 91 (octobre 2024) ; + 34 800 automobilistes pour aller travailler entre 2010 et 2021."],
+  [fr(X.traffic[0].tmja), "véhicules par jour sur la " + X.traffic[0].route + " à " + X.traffic[0].lieu + " (2023)", "Trafic moyen journalier annuel, la route la plus chargée de l'île ; puis " + X.traffic.slice(1).map(t => t.route + " " + t.lieu + " " + fr(t.tmja)).join(", ") + ".", true]]);
+facts("facts-tc", [
+  [pct(X.tc_share), "des actifs vont travailler en transports en commun (2023)", "Recensement 2023, déplacements domicile-travail. La fréquentation des réseaux n'est pas publique."],
+  [pct(D.access.share_served), "des habitants à 5 minutes à pied d'un arrêt", "400 m sur les voies OpenStreetMap, arrêts desservis le mardi 20 octobre 2026."],
+  [fr(D.access.without_stop), "habitants sans aucun arrêt à 5 minutes à pied", "Ils vivent dans les carreaux froids de la carte d'accès."],
+  [fr(D.access.low_peak), "habitants avec une desserte faible le matin", "Moins de 4 départs entre 7 h et 9 h à 5 minutes à pied."],
+  [fr(D.households.no_car), "ménages sans voiture, un sur quatre", "Recensement 2023 : " + pct(D.households.no_car / D.households.total) + " des ménages, ceux qu'une voiture partagée aide le plus."],
+  [fr(tcDepartures), "départs par jour sur les " + D.networks.length + " réseaux", D.networks.map(n => n.reseau + " " + fr(n.departs)).join(", ") + " (mardi 20 octobre 2026)."]]);
 // The island: inhabited 200 m cells and the national roads by traffic (TMJA 2023), drawn on a canvas
 function drawIsland(t) {
   const cv = $("island"); if (!cv || !cv.clientWidth) return;
@@ -964,19 +977,6 @@ redraw.synthese = () => {
   islandDone = true; const t0 = performance.now(), step = t => { const k = Math.max(0, Math.min(1, (t - t0) / 1100)); drawIsland(1 - Math.pow(1 - k, 3)); if (k < 1) requestAnimationFrame(step); };
   requestAnimationFrame(step);
 };
-kpis("kpis-context", [
-  {v: 0.83, f: pct, l: "des actifs qui se déplacent pour travailler prennent la voiture (2021)", info: "Insee Analyses Réunion n° 91 (octobre 2024), chiffre repris de la présentation de l'équipe ; + 34 800 automobilistes pour aller travailler entre 2010 et 2021.", src: ["insee91"]},
-  {v: X.cars_min, f: v => "≥ " + fr(v), l: "voitures possédées par les ménages (au moins, 2023)", info: "Borne basse : une voiture par ménage motorisé (" + fr(X.households - X.no_car) + "), plus une pour chacun des " + fr(X.two_cars) + " ménages qui en ont deux ou plus (recensement 2023).", src: ["rp"]},
-  {v: X.traffic[0].tmja, f: fr, l: "véhicules par jour sur la " + X.traffic[0].route + " à " + X.traffic[0].lieu + ", la route la plus chargée (2023)", info: "Trafic moyen journalier annuel ; puis " + X.traffic.slice(1).map(t => t.route + " " + t.lieu + " " + fr(t.tmja)).join(", ") + ". Aucun indice public d'embouteillage trouvé.", src: ["trafic"]},
-  {v: X.car_share, f: pct, l: "des actifs occupés vont travailler en voiture (recensement 2023)", info: fr(X.car_commuters) + " personnes. Le champ diffère de celui de l'Insee 2021 (actifs qui se déplacent pour travailler).", src: ["rp"]},
-  {v: D.households.two_cars, f: fr, l: "ménages avec deux voitures ou plus", info: "Recensement 2023 : ceux qui pourraient se passer de la deuxième.", src: ["rp"]}]);
-kpis("kpis-tc", [
-  {v: X.tc_share, f: pct, l: "des actifs vont travailler en transports en commun (2023)", info: "Recensement 2023, déplacements domicile-travail. La fréquentation des réseaux n'est pas publique : à demander aux autorités organisatrices.", src: ["rp"]},
-  {v: D.access.share_served, f: pct, l: "des habitants à moins de 400 m à pied d'un arrêt", info: "Un arrêt proche ne suffit pas : la desserte de pointe compte aussi.", src: ["gtfs", "osm", "filosofi"], go: () => { closePanel(); show("acces"); }, goLabel: "Voir la carte d'accès"},
-  {v: D.households.no_car, f: fr, l: "ménages sans voiture (" + pct(D.households.no_car / D.households.total) + ")", info: "Recensement 2023 : ceux qu'une voiture partagée aide le plus.", src: ["rp"], go: () => { closePanel(); show("concernes"); }, goLabel: "Voir où ils vivent"},
-  {v: D.access.without_stop, f: fr, l: "habitants sans arrêt à 400 m à pied", info: "Ils vivent dans les carreaux froids de la carte d'accès.", src: ["gtfs", "osm", "filosofi"]},
-  {v: D.access.low_peak, f: fr, l: "habitants avec une desserte de pointe faible", info: "Moins de 4 départs entre 7 h et 9 h à 5 minutes à pied.", src: ["gtfs", "osm"]},
-  {v: tcDepartures, f: fr, l: "départs par jour sur les " + D.networks.length + " réseaux (mardi 20 octobre 2026)", info: D.networks.map(n => n.reseau + " " + fr(n.departs)).join(", ") + ".", src: ["gtfs"]}]);
 D.communes.forEach(c => { communeByCode[c.code] = c; });
 // The approach in four steps; step 2 compares the communes in two ways, each with its page
 [["1", "Vue d'ensemble", "Population, motorisation, accès aux transports à 5 minutes à pied : qui est concerné, où.", [["acces", "Accès · Qui est concerné"]]],
