@@ -310,9 +310,10 @@
   .lim { display: grid; gap: 8px; align-content: start; }
   .flow.vertical { grid-template-columns: 1fr; gap: 8px; }
   .flow.vertical .step { grid-template-columns: 28px minmax(0, 1fr) auto; align-items: center; gap: 2px 12px; box-shadow: none; border: 1px solid var(--stroke); padding: 10px 14px; }
-  .flow.vertical .step .n { grid-row: span 2; }
+  .flow.vertical .step .n { grid-row: 1; }
+  .flow.vertical .step.multi .n { grid-row: 1 / span 2; }
   .flow.vertical .step b { grid-column: 2; } .flow.vertical .step span:not(.n):not(.go) { grid-column: 2; }
-  .flow.vertical .step .go { grid-column: 3; grid-row: 1 / span 2; white-space: nowrap; }
+  .flow.vertical .step .go { grid-column: 3; grid-row: 1; white-space: nowrap; }
   .flow.vertical .step.multi { cursor: default; } .flow.vertical .step.multi:hover { transform: none; }
   .flow.vertical .step .subs { grid-column: 2 / span 2; display: grid; gap: 6px; margin-top: 4px; }
   .step .sub { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; align-items: center; text-align: left; border: 0; border-top: 1px solid var(--stroke);
@@ -931,10 +932,10 @@ D.communes.forEach(c => { communeByCode[c.code] = c; });
  ["3", "Budgets", "Estimation des coûts d'une station : installation, exploitation, hypothèses d'usage ; nombre de stations pour un budget.", [["budget", "Budget et coûts"]]],
  ["4", "Limites et améliorations", "Ce que l'outil ne dit pas, et ce qui le complète avec Citiz, les autorités organisatrices et le terrain.", [["limites", "Limites et améliorations"]]]]
   .forEach(([n, t, d, pages]) => {
-    if (pages.length === 1) { const b = el("button", undefined, "step"); b.type = "button"; b.appendChild(el("span", n, "n")); b.appendChild(el("b", t)); b.appendChild(el("span", d));
+    if (pages.length === 1) { const b = el("button", undefined, "step"); b.type = "button"; b.appendChild(el("span", n, "n")); b.appendChild(el("b", t));
       b.appendChild(el("span", "Ouvrir : " + pages[0][1] + " →", "go")); b.addEventListener("click", () => show(pages[0][0])); $("flow").appendChild(b); return; }
     const b = el("div", undefined, "step multi"); b.appendChild(el("span", n, "n")); b.appendChild(el("b", t)); const subs = el("div", undefined, "subs");
-    pages.forEach(([id, label, text]) => { const sb = el("button", undefined, "sub"); sb.type = "button"; sb.appendChild(el("b", label)); sb.appendChild(el("span", text));
+    pages.forEach(([id, label, text]) => { const sb = el("button", undefined, "sub"); sb.type = "button"; sb.appendChild(el("b", label));
       sb.appendChild(el("span", "Ouvrir →", "go")); sb.addEventListener("click", () => show(id)); subs.appendChild(sb); });
     b.appendChild(subs); $("flow").appendChild(b);
   });
