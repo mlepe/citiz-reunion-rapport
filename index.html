@@ -550,16 +550,6 @@
       <p class="note" id="calc-note"></p></div></div>
 </section>
 
-<section class="tab" id="cartes" data-group="tool" data-label="Cartes" data-icon="map">
-  <div class="about" hidden>
-    <p>Chaque carte de l'outil s'ouvre en plein écran (touche Échap pour revenir). Le lien de chaque carte peut être partagé : il ouvre la page directement sur cette carte.</p>
-    <p>Cartes de l'équipe : les pages produites par les scripts de Karl et d'Aurélien, versionnées dans deliverables/map/ ; elles s'ouvrent dans un nouvel onglet, depuis une copie du dépôt.</p>
-  </div>
-  <div class="th"><h2>Cartes</h2></div>
-  <div class="gallery" id="gallery"></div>
-  <h3 class="gtitle">Cartes d'origine de l'équipe</h3>
-  <div class="gallery" id="gallery-team"></div>
-</section>
 
 <section class="tab" id="limites" data-group="next" data-label="Limites et améliorations" data-icon="warn">
   <div class="ph"><div><span class="eyebrow">Ce que l'outil ne dit pas, et comment le compléter</span><h2>Limites et améliorations</h2></div></div>
@@ -569,7 +559,19 @@
   <div class="flow" id="next-flow"></div>
 </section>
 
-<section class="tab" id="methode" data-group="next" data-label="Références" data-icon="list" data-src="kickoff">
+<section class="tab" id="cartes" data-group="annex" data-label="Cartes" data-icon="map">
+  <div class="about" hidden>
+    <p>Chaque carte de l'outil s'ouvre en plein écran (touche Échap pour revenir). Le lien de chaque carte peut être partagé : il ouvre la page directement sur cette carte.</p>
+    <p>Cartes de l'équipe : les pages produites par les scripts de Karl et d'Aurélien, versionnées dans deliverables/map/ ; elles s'ouvrent dans un nouvel onglet, depuis une copie du dépôt.</p>
+  </div>
+  <div class="ph"><div><span class="eyebrow">Annexe</span><h2>Toutes les cartes</h2></div></div>
+  <p class="intro">Chaque carte de l'outil s'ouvre en plein écran (touche Échap pour revenir) ; le lien de chaque carte peut être partagé. En bas, les cartes d'origine de l'équipe.</p>
+  <div class="gallery" id="gallery"></div>
+  <h3 class="gtitle">Cartes d'origine de l'équipe</h3>
+  <div class="gallery" id="gallery-team"></div>
+</section>
+
+<section class="tab" id="methode" data-group="annex" data-label="Références" data-icon="list" data-src="kickoff">
   <div class="about" hidden><p>Le sujet du kick-off point par point, les prochaines étapes et toutes les sources, avec leurs liens.</p></div>
   <div class="th"><h2>Références</h2></div>
   <div class="card"><div class="hd"><h3>Le sujet, point par point</h3></div><div class="tablebox" style="max-height:none"><table id="t-kickoff"></table></div><p class="note">Cliquez une ligne pour ouvrir la page qui y répond.</p></div>
@@ -799,7 +801,7 @@ function show(id, keepScroll) {
   try { history.replaceState(null, "", "#" + id); } catch (e) {}
 }
 let group = "";
-tabs.forEach(t => { if (t.dataset.group !== group) { group = t.dataset.group; nav.appendChild(el("div", {intro: "Présentation", tool: "Outil", next: "Pour aller plus loin"}[group], "grp")); }
+tabs.forEach(t => { if (t.dataset.group !== group) { group = t.dataset.group; nav.appendChild(el("div", {intro: "Présentation", tool: "Outil", next: "Pour aller plus loin", annex: "Annexes"}[group], "grp")); }
   const b = el("button"); b.setAttribute("role", "tab"); b.dataset.tab = t.id; b.appendChild(icon(ICONS[t.dataset.icon]));
   b.appendChild(el("span", t.dataset.label)); if (t.dataset.num) b.appendChild(el("span", t.dataset.num, "num")); b.addEventListener("click", () => show(t.id)); nav.appendChild(b); });
 const foot = el("div", undefined, "foot"); foot.textContent = "Données traitées par le pipeline local · " + D.generated; nav.appendChild(foot);
