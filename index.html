@@ -1243,7 +1243,7 @@ init.investir = () => {
   D.aom.forEach(s => L.circleMarker([s.lat, s.lon], {radius: 7, color: "#e8a100", weight: 3, fill: true, fillOpacity: 0}).bindTooltip("Variante intercommunalité · " + s.aom + " · " + s.name).addTo(aom));
   D.reco.forEach(x => L.circleMarker([x.lat, x.lon], {radius: 7, color: "#fff", weight: 1.5, fillColor: RECO_TYPES[x.type][1], fillOpacity: .95}).bindTooltip(RECO_TYPES[x.type][0] + " · " + x.commune)
     .on("click", e => { if (estimateMode) return; L.DomEvent.stopPropagation(e); recoSheet(x); }).addTo(reco));
-  chips("chips-invest", m, [["Quadrillage d'opportunité", grid, true, GRID[3][2]], ["Arrêts ≥ 4 départs 7-9 h", stops, false, "#0f6cbd"], ["Stations proposées (les 10 en rouge)", v2, true, "#c4314b"],
+  chips("chips-invest", m, [["Quadrillage d'opportunité", grid, true, GRID[3][2]], ["Arrêts ≥ 4 départs 7-9 h", stops, true, "#0f6cbd"], ["Stations proposées (les 10 en rouge)", v2, false, "#c4314b"],
     ["Variante : une par intercommunalité", aom, false, "#e8a100", true], ["Scénario multi-équipements", reco, false, "#00a3a3"]]);
   m.on("click", e => { if (estimateMode) estimateAt(e.latlng.lat, e.latlng.lng); });
 };
