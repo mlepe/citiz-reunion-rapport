@@ -395,12 +395,8 @@
 
 <section class="tab" id="demarche" data-group="intro" data-label="Notre démarche" data-icon="book">
   <div class="ph"><div><span class="eyebrow">Un outil d'aide à la décision pour l'implantation de stations Citiz</span><h2>Notre démarche</h2></div><span class="srcs" data-src="kickoff"></span></div>
-  <div class="grid">
-    <div class="card accent"><h3>Une alternative : l'autopartage</h3>
+  <div class="card accent"><h3>Une alternative : l'autopartage</h3>
       <p class="lead">Un accès ponctuel à une voiture, en complément des transports en commun : utile aux ménages sans voiture et à ceux qui pourraient se passer de la deuxième. Citiz n'a encore aucune station à La Réunion.</p></div>
-    <div class="card accent"><h3>Ce que l'outil recommande</h3>
-      <p class="lead" id="take"></p></div>
-  </div>
   <div class="grid wide">
     <div class="card"><div class="hd"><h3>Cinq étapes, sur des données publiques</h3></div><div class="flow vertical" id="flow"></div></div>
     <div class="card"><div class="hd"><h3>Les grands indicateurs</h3></div><ul class="list ind">
@@ -408,20 +404,7 @@
       <li><b>Motorisation</b> : ménages sans voiture et avec deux voitures ou plus (recensement 2023).</li>
       <li><b>Accès aux transports</b> : lignes, arrêts et départs entre 7 h et 9 h à 5 minutes à pied (GTFS, réseau piéton OpenStreetMap).</li>
       <li><b>Intensité urbaine</b> : densité habitée, emplois et équipements par km² urbanisé.</li>
-      <li><b>Potentiel</b> : ménages pondérés par la motorisation, à portée à pied d'un arrêt.</li>
-      <li><b>Similarité</b> : six indicateurs comparés aux abords de stations Citiz de référence.</li>
-      <li><b>Coûts</b> : investissement, résultat mensuel, usage nécessaire à l'équilibre.</li></ul></div>
-  </div>
-  <div class="card"><div class="hd"><h3>Les trois objectifs du kick-off, et la page de l'outil qui y répond</h3></div><div class="grid three" id="objectives"></div></div>
-  <div class="grid">
-    <div class="card"><div class="hd"><h3>Trois jugements séparés</h3></div><div class="grid three" id="judgements"></div>
-      <p class="note">Leur accord renforce un site ; aucun ne remplace la visite sur place. Les stations proposées sont aussi contrôlées par l'outil de Karl, relancé à 300, 500 et 800 m.</p></div>
-    <div class="card"><div class="hd"><h3>Utiliser l'outil</h3></div><ul class="list">
-      <li><b>Commune</b> : le filtre de la barre du haut centre les cartes et filtre les tableaux et les chiffres clés.</li>
-      <li><b>Paramètres de la carte</b> : calques et mesures ; la légende reste visible.</li>
-      <li><b>À propos de cette vue</b> : la définition de chaque mesure et ses limites.</li>
-      <li><b>Clic</b> sur un chiffre, une barre, une ligne, un carreau ou une station : sa fiche à droite.</li>
-      <li><b>Estimer un emplacement</b> (page Implantation) : valeur et coût d'un lieu choisi sur la carte.</li></ul></div>
+</ul></div>
   </div>
   <p class="mentions"><b>Données</b> : INSEE (Filosofi 2019 au carreau de 200 m, recensement 2023, BPE), horaires GTFS des 7 réseaux et vélos en libre-service GBFS (transport.data.gouv.fr), bornes IRVE (data.gouv.fr), OpenStreetMap, documents publics Citiz ; liste complète et liens : bouton « Sources ».
     <b>Outils</b> : Python (pipeline rejouable, Docker et PostgreSQL), Microsoft Fabric (Lakehouse, notebooks, Power BI), agents IA pour le développement et les contrôles, Leaflet et OpenStreetMap pour les cartes.</p>
@@ -924,15 +907,6 @@ function items(list) { const ul = el("ul"); list.forEach(([text, issues]) => { c
  ["3", "Pilote mesuré", "Réservations, abonnés actifs, demandes non satisfaites, incidents, coûts, suivis dans le temps."], ["4", "Apprendre", "Un modèle d'usage une fois l'historique constitué, puis la décision d'extension."]]
   .forEach(([n, t, d]) => { const b = el("div", undefined, "step"); b.appendChild(el("span", n, "n")); b.appendChild(el("b", t)); b.appendChild(el("span", d)); $("next-flow").appendChild(b); });
 
-$("take").textContent = "Ouvrir 3 stations pilotes à Saint-Denis (" + pilots.map(s => s.name).join(", ") + "), à des arrêts bien desservis entourés de ménages sans voiture, puis étendre vers Le Port et Saint-Pierre une fois l'usage mesuré.";
-[["01", "Cartographier l'accès", "Les zones de 200 m, du froid au chaud, selon les solutions à 5 min à pied.", "acces"],
- ["02", "Montrer qui est concerné", "Chaque type de station et d'arrêt avec les habitants qu'il dessert.", "concernes"],
- ["03", "Proposer où s'implanter et investir", "Stations Citiz, arrêts de bus et vélos, estimation d'un emplacement, budget.", "investir"]]
-  .forEach(([n, t, d, id]) => { const b = el("button", undefined, "obj"); b.type = "button"; b.appendChild(el("span", "OBJECTIF " + n, "n")); b.appendChild(el("b", t)); b.appendChild(el("span", d));
-    b.addEventListener("click", () => show(id)); $("objectives").appendChild(b); });
-[["Besoin", "Score : où vivent les ménages qui ont le plus besoin d'une voiture partagée.", "investir"], ["Ressemblance", "Similarité : où l'environnement ressemble à des stations Citiz qui fonctionnent.", "similarite"],
- ["Coût", "Estimateur : ce que coûte et rapporte chaque station.", "budget"]]
-  .forEach(([t, d, id]) => { const b = el("button", undefined, "obj"); b.type = "button"; b.appendChild(el("b", t)); b.appendChild(el("span", d)); b.addEventListener("click", () => show(id)); $("judgements").appendChild(b); });
 function siteSheet(s) {
   openPanel("Station n° " + s.rank + " · " + s.name, s.commune + (s.pilot ? " · parmi les 10 stations proposées" : " · au-delà des 10 proposées"), [
     kv([["Départs 7-9 h à l'arrêt", fr(s.peak)], ["Habitants à 500 m à pied", fr(s.residents_500m)], ["Potentiel ajouté (ménages pondérés)", fr(s.new_potential)],
