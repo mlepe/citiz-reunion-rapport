@@ -313,6 +313,13 @@
   .flow.vertical .step .n { grid-row: span 2; }
   .flow.vertical .step b { grid-column: 2; } .flow.vertical .step span:not(.n):not(.go) { grid-column: 2; }
   .flow.vertical .step .go { grid-column: 3; grid-row: 1 / span 2; white-space: nowrap; }
+  .flow.vertical .step.multi { cursor: default; } .flow.vertical .step.multi:hover { transform: none; }
+  .flow.vertical .step .subs { grid-column: 2 / span 2; display: grid; gap: 6px; margin-top: 4px; }
+  .step .sub { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; align-items: center; text-align: left; border: 0; border-left: 3px solid var(--brand-soft2);
+               background: var(--bg2); border-radius: 0 6px 6px 0; padding: 6px 10px; cursor: pointer; font: inherit; color: inherit; }
+  .step .sub:hover { background: var(--brand-soft); border-left-color: var(--brand); }
+  .step .sub b { font-size: 14px; } .step .sub span:not(.go) { grid-column: 1; font-size: 12px; color: var(--fg3); line-height: 17px; }
+  .step .sub .go { grid-column: 2; grid-row: 1 / span 2; }
   ul.list.ind li { line-height: 20px; }
   p.mentions { margin: 8px 0 0; font-size: 12px; line-height: 18px; color: var(--fg3); border-top: 1px solid var(--stroke); padding-top: 10px; }
   p.mentions b { color: var(--fg2); }
@@ -413,7 +420,7 @@
   <div class="card accent"><h3>Une alternative : l'autopartage</h3>
       <p class="lead">Un accès ponctuel à une voiture, en complément des transports en commun : utile aux ménages sans voiture et à ceux qui pourraient se passer de la deuxième. Citiz n'a encore aucune station à La Réunion.</p></div>
   <div class="grid wide">
-    <div class="card"><div class="hd"><h3>Cinq étapes, sur des données publiques</h3></div><div class="flow vertical" id="flow"></div></div>
+    <div class="card"><div class="hd"><h3>Quatre étapes, sur des données publiques</h3></div><div class="flow vertical" id="flow"></div></div>
     <div class="card"><div class="hd"><h3>Les grands indicateurs</h3></div><ul class="list ind">
       <li><b>Population</b> : habitants au carreau de 200 m (INSEE Filosofi 2019).</li>
       <li><b>Motorisation</b> : ménages sans voiture et avec deux voitures ou plus (recensement 2023).</li>
@@ -916,13 +923,20 @@ kpis("kpis-tc", [
   {v: D.access.low_peak, f: fr, l: "habitants avec une desserte de pointe faible", info: "Moins de 4 départs entre 7 h et 9 h à 5 minutes à pied.", src: ["gtfs", "osm"]},
   {v: tcDepartures, f: fr, l: "départs par jour sur les " + D.networks.length + " réseaux (mardi 20 octobre 2026)", info: D.networks.map(n => n.reseau + " " + fr(n.departs)).join(", ") + ".", src: ["gtfs"]}]);
 D.communes.forEach(c => { communeByCode[c.code] = c; });
-[["1", "Diagnostiquer", "Population, motorisation, accès aux transports à 5 minutes à pied : qui est concerné, où.", "acces", "Accès · Qui est concerné"],
- ["2", "Score d'opportunité", "Les 24 communes comparées sur quatre critères, puis le choix des stations une à une, contrôlé par l'outil de Karl.", "investir", "Implantation"],
- ["3", "Score de similarité", "Comparaison test des quartiers de 5 communes avec les abords de 4 stations Citiz en métropole (Eybens, Pélussin, ArchParc).", "similarite", "Similarité"],
- ["4", "Budgets", "Estimation des coûts d'une station : installation, exploitation, hypothèses d'usage ; nombre de stations pour un budget.", "budget", "Budget et coûts"],
- ["5", "Limites et améliorations", "Ce que l'outil ne dit pas, et ce qui le complète avec Citiz, les autorités organisatrices et le terrain.", "limites", "Limites et améliorations"]]
-  .forEach(([n, t, d, id, page]) => { const b = el("button", undefined, "step"); b.type = "button"; b.appendChild(el("span", n, "n")); b.appendChild(el("b", t)); b.appendChild(el("span", d));
-    b.appendChild(el("span", "Ouvrir : " + page + " →", "go")); b.addEventListener("click", () => show(id)); $("flow").appendChild(b); });
+// The approach in four steps; step 2 compares the communes in two ways, each with its page
+[["1", "Diagnostiquer", "Population, motorisation, accès aux transports à 5 minutes à pied : qui est concerné, où.", [["acces", "Accès · Qui est concerné"]]],
+ ["2", "Comparaison des communes", "", [["investir", "Par opportunité", "Les 24 communes comparées sur quatre critères, puis le choix des stations une à une, contrôlé par l'outil de Karl."],
+   ["similarite", "Par similarité", "Comparaison test des quartiers de 5 communes avec les abords de 4 stations Citiz en métropole (Eybens, Pélussin, ArchParc)."]]],
+ ["3", "Budgets", "Estimation des coûts d'une station : installation, exploitation, hypothèses d'usage ; nombre de stations pour un budget.", [["budget", "Budget et coûts"]]],
+ ["4", "Limites et améliorations", "Ce que l'outil ne dit pas, et ce qui le complète avec Citiz, les autorités organisatrices et le terrain.", [["limites", "Limites et améliorations"]]]]
+  .forEach(([n, t, d, pages]) => {
+    if (pages.length === 1) { const b = el("button", undefined, "step"); b.type = "button"; b.appendChild(el("span", n, "n")); b.appendChild(el("b", t)); b.appendChild(el("span", d));
+      b.appendChild(el("span", "Ouvrir : " + pages[0][1] + " →", "go")); b.addEventListener("click", () => show(pages[0][0])); $("flow").appendChild(b); return; }
+    const b = el("div", undefined, "step multi"); b.appendChild(el("span", n, "n")); b.appendChild(el("b", t)); const subs = el("div", undefined, "subs");
+    pages.forEach(([id, label, text]) => { const sb = el("button", undefined, "sub"); sb.type = "button"; sb.appendChild(el("b", label)); sb.appendChild(el("span", text));
+      sb.appendChild(el("span", "Ouvrir →", "go")); sb.addEventListener("click", () => show(id)); subs.appendChild(sb); });
+    b.appendChild(subs); $("flow").appendChild(b);
+  });
 const ISSUES = D.repo.replace(/blob\/main\/$/, "issues/");
 function issueLink(n) { const a = el("a", "#" + n, "issue"); a.href = ISSUES + n; a.target = "_blank"; a.rel = "noopener noreferrer"; a.title = "Issue GitHub n° " + n + " (dépôt de l'équipe)"; return a; }
 function listCard(box, title, items) {
