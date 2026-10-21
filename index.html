@@ -308,6 +308,13 @@
   ol.steps3 li span { color: var(--fg2); font-size: 13px; line-height: 19px; }
   .drawer .db > p { margin: 0; line-height: 20px; color: var(--fg2); }
   .lim { display: grid; gap: 8px; align-content: start; }
+  /* Previous and next page */
+  .pager { position: fixed; top: 50%; transform: translateY(-50%); z-index: 1050; width: 30px; height: 64px; display: grid; place-items: center; border: 1px solid var(--stroke);
+           border-radius: 8px; background: var(--bg1); color: var(--fg2); box-shadow: var(--shadow4); cursor: pointer; opacity: .7; transition: opacity .15s, background .15s; }
+  .pager:hover, .pager:focus-visible { opacity: 1; background: var(--brand-soft); color: var(--brand); }
+  .pager svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .pager.prev { left: 234px; } .pager.next { right: 2px; }
+  @media (max-width: 900px) { .pager { top: auto; bottom: 12px; transform: none; } .pager.prev { left: 8px; } .pager.next { right: 8px; } }
   .flow.vertical { grid-template-columns: 1fr; gap: 8px; }
   .flow.vertical .step { grid-template-columns: 28px minmax(0, 1fr) auto; align-items: center; gap: 2px 12px; box-shadow: none; border: 1px solid var(--stroke); padding: 10px 14px; }
   .flow.vertical .step .n { grid-row: 1; }
@@ -648,6 +655,8 @@
 </section>
 </main>
 </div>
+<button class="pager prev" id="pg-prev" type="button"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+<button class="pager next" id="pg-next" type="button"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
 <aside class="drawer" id="drawer" aria-hidden="true" aria-labelledby="d-title"><div class="dh"><div><h3 id="d-title"></h3><small id="d-sub"></small></div>
   <button class="x" id="d-close" type="button" aria-label="Fermer">×</button></div><div class="db" id="d-body"></div></aside>
 <div id="tip" role="tooltip"></div>
@@ -860,6 +869,9 @@ function show(id, keepScroll) {
   $(id).querySelectorAll(".kpi").forEach(k => k._count && k._count());
   Object.values(maps).forEach(m => setTimeout(() => m.invalidateSize(), 30));
   if (!keepScroll) window.scrollTo({top: 0, behavior: REDUCED ? "auto" : "smooth"});
+  const i = tabs.findIndex(t => t.id === id), before = tabs[i - 1], after = tabs[i + 1];
+  [[$("pg-prev"), before, "Précédent"], [$("pg-next"), after, "Suivant"]].forEach(([b, t, word]) => {
+    b.hidden = !t; if (t) { b.dataset.to = t.id; b.title = word + " : " + t.dataset.label; b.setAttribute("aria-label", b.title); } });
   try { history.replaceState(null, "", "#" + id); } catch (e) {}
 }
 let group = "";
@@ -868,6 +880,7 @@ tabs.forEach(t => { if (t.dataset.group !== group) { group = t.dataset.group; na
   b.appendChild(el("span", t.dataset.label)); if (t.dataset.num) b.appendChild(el("span", t.dataset.num, "num")); b.addEventListener("click", () => show(t.id)); nav.appendChild(b); });
 const foot = el("div", undefined, "foot"); foot.textContent = "Données traitées par le pipeline local · " + D.generated; nav.appendChild(foot);
 $("btn-maps").addEventListener("click", () => show("cartes"));
+["pg-prev", "pg-next"].forEach(id => $(id).addEventListener("click", () => show($(id).dataset.to)));
 $("btn-theme").addEventListener("click", () => { const r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
   r.dataset.theme = dark ? "light" : "dark"; Object.values(redraw).forEach(f => f()); });
 document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => b.dataset.go === "estimer" ? startEstimate() : show(b.dataset.go)));
